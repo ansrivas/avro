@@ -379,12 +379,16 @@ impl Value {
                 items.iter().all(|(_, value)| value.validate(inner))
             }
             (&Value::Record(ref record_fields), &Schema::Record { ref fields, .. }) => {
-                fields.len() == record_fields.len()
-                    && fields.iter().zip(record_fields.iter()).all(
-                        |(field, &(ref name, ref value))| {
+                let record_fields_map: HashMap<String, Value> =
+                    record_fields.into_iter().map(|r| r.clone()).collect();
+                fields.len() == record_fields_map.len()
+                    && fields.iter().all(|field| {
+                        if let Some((name, value)) = record_fields_map.get_key_value(&field.name) {
                             field.name == *name && value.validate(&field.schema)
-                        },
-                    )
+                        } else {
+                            false
+                        }
+                    })
             }
             (&Value::Map(ref items), &Schema::Record { ref fields, .. }) => {
                 fields.iter().all(|field| {
