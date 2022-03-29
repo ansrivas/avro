@@ -51,6 +51,7 @@ impl Checker {
         }
 
         if !SchemaCompatibility::match_schemas(writers_schema, readers_schema) {
+            println!("SchemaCompatibility::match_schemas");
             return false;
         }
 
@@ -99,6 +100,7 @@ impl Checker {
                         return !w_symbols.iter().any(|e| !r_symbols.contains(e));
                     }
                 }
+                println!("SchemaKind::Enum");
                 false
             }
             _ => {
@@ -109,6 +111,7 @@ impl Checker {
                         }
                     }
                 }
+                println!("SchemaKind::Union");
                 false
             }
         }
@@ -118,6 +121,7 @@ impl Checker {
         let w_type = SchemaKind::from(writers_schema);
 
         if w_type == SchemaKind::Union {
+            println!("match_record_schemas: SchemaKind::Union");
             return false;
         }
 
@@ -134,9 +138,11 @@ impl Checker {
                 for field in r_fields.iter() {
                     if let Some(pos) = w_lookup.get(&field.name) {
                         if !self.full_match_schemas(&w_fields[*pos].schema, &field.schema) {
+                            println!("match_record_schemas: full_match_schemas");
                             return false;
                         }
                     } else if field.default.is_none() {
+                        println!("match_record_schemas: field.default.is_none()");
                         return false;
                     }
                 }
