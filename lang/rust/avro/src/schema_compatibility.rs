@@ -142,7 +142,10 @@ impl Checker {
                             return false;
                         }
                     } else if field.default.is_none() {
-                        println!("match_record_schemas: field.default.is_none()");
+                        println!(
+                            "match_record_schemas: field.default.is_none(): {}",
+                            &field.name
+                        );
                         return false;
                     }
                 }
